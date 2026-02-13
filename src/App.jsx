@@ -1,3 +1,4 @@
+import React from "react";
 import { useState, useMemo, useEffect } from "react";
 import { Plus, Pencil, ArrowLeft, ArrowRight } from "lucide-react";
 import './index.css';
