@@ -1,5 +1,6 @@
 import { useState, useMemo, useEffect } from "react";
 import { Plus, Pencil, ArrowLeft, ArrowRight } from "lucide-react";
+import './index.css';
 
 export default function App() {
   const [view, setView] = useState("home");
