@@ -13,5 +13,12 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
-  }
+  },
+  "dependencies": {
+  "tailwindcss": "^3.3.2",
+  "lucide-react": "^0.264.0",
+  "@radix-ui/react-select": "^1.0.0",
+  "@radix-ui/react-dialog": "^1.0.0"
+}
+
 }
