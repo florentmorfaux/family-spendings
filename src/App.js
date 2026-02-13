@@ -1,43 +1,61 @@
 import { useState, useMemo, useEffect } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, ArrowRight, Plus, Pencil } from "lucide-react";
+import { Plus, Pencil, ArrowLeft, ArrowRight } from "lucide-react";
 
-export default function FinanceProto() {
+export default function App() {
   const [view, setView] = useState("home");
   const [monthOffset, setMonthOffset] = useState(0);
 
-  // Simple in-memory auth mock (not secure, proto only)
   const [users, setUsers] = useState(() => {
-  const saved = localStorage.getItem("ff_users");
-  return saved ? JSON.parse(saved) : [
-    { username: "Florent", password: "" },
-    { username: "Eriko", password: "" }
-  ];
-});
+    const saved = localStorage.getItem("ff_users");
+    return saved
+      ? JSON.parse(saved)
+      : [
+          { username: "Florent", password: "" },
+          { username: "Eriko", password: "" },
+        ];
+  });
 
   const [newUser, setNewUser] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [editingPasswordFor, setEditingPasswordFor] = useState(null);
-  const [editingId, setEditingId] = useState(null);
-  const [editMode, setEditMode] = useState(false);
 
   const [expenses, setExpenses] = useState(() => {
-  const saved = localStorage.getItem("ff_expenses");
-  return saved ? JSON.parse(saved) : [
-    { id: 1, date: "2026-02-01", user: "Florent", category: "Groceries", amount: 4280, description: "OK Store", receipt: null },
-    { id: 2, date: "2026-02-02", user: "Eriko", category: "Kids", amount: 8000, description: "Piano", receipt: null }
-  ];
-});
+    const saved = localStorage.getItem("ff_expenses");
+    return saved
+      ? JSON.parse(saved)
+      : [
+          {
+            id: 1,
+            date: "2026-02-01",
+            user: "Florent",
+            category: "Groceries",
+            amount: 4280,
+            description: "OK Store",
+            receipt: null,
+          },
+          {
+            id: 2,
+            date: "2026-02-02",
+            user: "Eriko",
+            category: "Kids",
+            amount: 8000,
+            description: "Piano",
+            receipt: null,
+          },
+        ];
+  });
+
+  const [editingId, setEditingId] = useState(null);
+  const [editMode, setEditMode] = useState(false);
 
   const currentDate = new Date();
   currentDate.setMonth(currentDate.getMonth() + monthOffset);
   const month = currentDate.getMonth();
   const year = currentDate.getFullYear();
-
-  const monthLabel = currentDate.toLocaleString("default", { month: "long", year: "numeric" });
+  const monthLabel = currentDate.toLocaleString("default", {
+    month: "long",
+    year: "numeric",
+  });
 
   const monthlyExpenses = useMemo(() => {
     return expenses.filter((e) => {
@@ -65,25 +83,27 @@ export default function FinanceProto() {
   }, [monthlyExpenses]);
 
   const CATEGORY_COLORS = {
-    "Groceries": "bg-green-100 text-green-700",
+    Groceries: "bg-green-100 text-green-700",
     "Eating Out": "bg-orange-100 text-orange-700",
-    "Kids": "bg-pink-100 text-pink-700",
-    "Utilities": "bg-blue-100 text-blue-700",
-    "Transport": "bg-yellow-100 text-yellow-700",
-    "Home": "bg-purple-100 text-purple-700",
-    "Health": "bg-red-100 text-red-700",
-    "Misc": "bg-gray-200 text-gray-700"
+    Kids: "bg-pink-100 text-pink-700",
+    Utilities: "bg-blue-100 text-blue-700",
+    Transport: "bg-yellow-100 text-yellow-700",
+    Home: "bg-purple-100 text-purple-700",
+    Health: "bg-red-100 text-red-700",
+    Misc: "bg-gray-200 text-gray-700",
   };
 
   useEffect(() => {
-  localStorage.setItem("ff_expenses", JSON.stringify(expenses));
-}, [expenses]);
+    localStorage.setItem("ff_expenses", JSON.stringify(expenses));
+  }, [expenses]);
 
-useEffect(() => {
-  localStorage.setItem("ff_users", JSON.stringify(users));
-}, [users]);
+  useEffect(() => {
+    localStorage.setItem("ff_users", JSON.stringify(users));
+  }, [users]);
 
-const handleAdd = async (e) => {
+  const editingExpense = expenses.find((e) => e.id === editingId);
+
+  const handleAdd = async (e) => {
     e.preventDefault();
     const form = e.target;
 
@@ -105,7 +125,7 @@ const handleAdd = async (e) => {
       category: form.category.value,
       amount: Number(form.amount.value),
       description: form.description.value,
-      receipt: receiptData
+      receipt: receiptData,
     };
 
     if (editingId) {
@@ -123,8 +143,6 @@ const handleAdd = async (e) => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  
-
   const handleAddUser = () => {
     if (newUser && !users.find((u) => u.username === newUser)) {
       setUsers([...users, { username: newUser, password: newPassword }]);
@@ -134,78 +152,81 @@ const handleAdd = async (e) => {
   };
 
   const handleChangePassword = (username, newPass) => {
-    setUsers(users.map((u) =>
-      u.username === username ? { ...u, password: newPass } : u
-    ));
+    setUsers(users.map((u) => (u.username === username ? { ...u, password: newPass } : u)));
     setEditingPasswordFor(null);
   };
 
-  const editingExpense = expenses.find((e) => e.id === editingId);
-
   if (view === "admin") {
-
-  return (
+    return (
       <div className="min-h-screen bg-gray-50 p-4 md:p-8">
         <div className="max-w-3xl mx-auto space-y-6">
           <div className="flex justify-between items-center">
             <h1 className="text-2xl font-semibold">Admin</h1>
-            <Button variant="outline" onClick={() => setView("home")}>Back</Button>
+            <button
+              className="px-4 py-2 border rounded"
+              onClick={() => setView("home")}
+            >
+              Back
+            </button>
           </div>
 
-          <Card className="rounded-2xl shadow">
-            <CardContent className="p-6 space-y-4">
-              <h2 className="font-semibold">Users & Passwords</h2>
+          <div className="bg-white rounded-2xl shadow p-6 space-y-4">
+            <h2 className="font-semibold">Users & Passwords</h2>
 
-              {users.map((u, i) => (
-                <div key={i} className="border-b pb-3 space-y-2">
-                  <div className="flex justify-between items-center">
-                    <span className="font-medium">{u.username}</span>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => setEditingPasswordFor(u.username)}
-                    >
-                      Change Password
-                    </Button>
-                  </div>
-
-                  {editingPasswordFor === u.username && (
-                    <div className="flex gap-2">
-                      <Input
-                        type="password"
-                        placeholder="New password"
-                        onChange={(e) => setNewPassword(e.target.value)}
-                      />
-                      <Button
-                        size="sm"
-                        onClick={() => handleChangePassword(u.username, newPassword)}
-                      >
-                        Save
-                      </Button>
-                    </div>
-                  )}
+            {users.map((u, i) => (
+              <div key={i} className="border-b pb-3 space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="font-medium">{u.username}</span>
+                  <button
+                    className="px-2 py-1 border rounded text-sm"
+                    onClick={() => setEditingPasswordFor(u.username)}
+                  >
+                    Change Password
+                  </button>
                 </div>
-              ))}
 
-              <div className="pt-4 space-y-2">
-                <h3 className="font-medium">Create New User</h3>
-                <Input
-                  placeholder="Username"
-                  value={newUser}
-                  onChange={(e) => setNewUser(e.target.value)}
-                />
-                <Input
-                  type="password"
-                  placeholder="Password"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                />
-                <Button onClick={handleAddUser}>Create User</Button>
+                {editingPasswordFor === u.username && (
+                  <div className="flex gap-2">
+                    <input
+                      type="password"
+                      placeholder="New password"
+                      className="border px-2 py-1 rounded flex-1"
+                      onChange={(e) => setNewPassword(e.target.value)}
+                    />
+                    <button
+                      className="px-2 py-1 border rounded"
+                      onClick={() => handleChangePassword(u.username, newPassword)}
+                    >
+                      Save
+                    </button>
+                  </div>
+                )}
               </div>
-            </CardContent>
-          </Card>
+            ))}
 
-          
+            <div className="pt-4 space-y-2">
+              <h3 className="font-medium">Create New User</h3>
+              <input
+                placeholder="Username"
+                className="border px-2 py-1 rounded w-full"
+                value={newUser}
+                onChange={(e) => setNewUser(e.target.value)}
+              />
+              <input
+                type="password"
+                placeholder="Password"
+                className="border px-2 py-1 rounded w-full"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+              />
+              <button
+                className="px-4 py-2 bg-blue-500 text-white rounded w-full"
+                onClick={handleAddUser}
+              >
+                Create User
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -214,162 +235,176 @@ const handleAdd = async (e) => {
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-8">
       <div className="max-w-4xl mx-auto space-y-6">
+        {/* Header */}
         <div className="flex justify-between items-center">
           <h1 className="text-xl md:text-2xl font-semibold">{monthLabel}</h1>
           <div className="flex gap-2">
-            <Button variant="outline" onClick={() => setEditMode(!editMode)}>
+            <button
+              className="px-3 py-1 border rounded"
+              onClick={() => setEditMode(!editMode)}
+            >
               {editMode ? "Done" : "Edit"}
-            </Button>
-            <Button variant="outline" onClick={() => setView("admin")}>Admin</Button>
+            </button>
+            <button
+              className="px-3 py-1 border rounded"
+              onClick={() => setView("admin")}
+            >
+              Admin
+            </button>
           </div>
         </div>
 
-        <Card className="rounded-2xl shadow">
-          <CardContent className="p-6 space-y-4">
-            <div className="flex items-center justify-between">
-              <Button variant="ghost" onClick={() => setMonthOffset(monthOffset - 1)}>
-                <ArrowLeft />
-              </Button>
-              <p className="text-gray-500 text-sm">Total this month</p>
-              <Button variant="ghost" onClick={() => setMonthOffset(monthOffset + 1)}>
-                <ArrowRight />
-              </Button>
-            </div>
-            <p className="text-3xl font-bold text-center">¥{totalMonth.toLocaleString()}</p>
-          </CardContent>
-        </Card>
+        {/* Monthly Total */}
+        <div className="bg-white rounded-2xl shadow p-6 space-y-2 text-center">
+          <div className="flex justify-between items-center mb-2">
+            <button onClick={() => setMonthOffset(monthOffset - 1)}>&larr;</button>
+            <span className="text-gray-500 text-sm">Total this month</span>
+            <button onClick={() => setMonthOffset(monthOffset + 1)}>&rarr;</button>
+          </div>
+          <p className="text-3xl font-bold">¥{totalMonth.toLocaleString()}</p>
+        </div>
 
-        <Card className="rounded-2xl shadow">
-          <CardContent className="p-6">
-            <form key={editingId || "new"} onSubmit={handleAdd} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <Input
-                  type="date"
-                  name="date"
-                  defaultValue={editingExpense ? editingExpense.date : new Date().toISOString().split("T")[0]}
-                  required
-                />
-                <Input
-                  type="number"
-                  name="amount"
-                  placeholder="Amount (¥)"
-                  defaultValue={editingExpense ? editingExpense.amount : ""}
-                  required
-                  autoFocus
-                />
-              </div>
-
-              <Select name="user" defaultValue={editingExpense ? editingExpense.user : undefined} required>
-                <SelectTrigger>
-                  <SelectValue placeholder="Who" />
-                </SelectTrigger>
-                <SelectContent>
-                  {users.map((u) => (
-                    <SelectItem key={u.username} value={u.username}>{u.username}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-
-              <Select name="category" defaultValue={editingExpense ? editingExpense.category : undefined} required>
-                <SelectTrigger>
-                  <SelectValue placeholder="Category" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Groceries">Groceries</SelectItem>
-                  <SelectItem value="Eating Out">Eating Out</SelectItem>
-                  <SelectItem value="Kids">Kids</SelectItem>
-                  <SelectItem value="Utilities">Utilities</SelectItem>
-                  <SelectItem value="Transport">Transport</SelectItem>
-                  <SelectItem value="Home">Home</SelectItem>
-                  <SelectItem value="Health">Health</SelectItem>
-                  <SelectItem value="Misc">Misc</SelectItem>
-                </SelectContent>
-              </Select>
-
-              <Input
-                type="text"
-                name="description"
-                placeholder="Description"
-                defaultValue={editingExpense ? editingExpense.description : ""}
+        {/* Add/Edit Expense */}
+        <div className="bg-white rounded-2xl shadow p-6">
+          <form key={editingId || "new"} onSubmit={handleAdd} className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <input
+                type="date"
+                name="date"
+                defaultValue={
+                  editingExpense
+                    ? editingExpense.date
+                    : new Date().toISOString().split("T")[0]
+                }
+                required
+                className="border px-2 py-1 rounded"
               />
-              <Input type="file" accept="image/*" capture="environment" />
+              <input
+                type="number"
+                name="amount"
+                placeholder="Amount (¥)"
+                defaultValue={editingExpense ? editingExpense.amount : ""}
+                required
+                className="border px-2 py-1 rounded"
+              />
+            </div>
 
-              <Button type="submit" className="w-full rounded-2xl">
-                <Plus className="mr-2" /> {editingId ? "Update Expense" : "Add Expense"}
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
+            <select
+              name="user"
+              defaultValue={editingExpense ? editingExpense.user : undefined}
+              required
+              className="border px-2 py-1 rounded w-full"
+            >
+              <option value="">Who</option>
+              {users.map((u) => (
+                <option key={u.username} value={u.username}>
+                  {u.username}
+                </option>
+              ))}
+            </select>
 
-        <Card className="rounded-2xl shadow">
-          <CardContent className="p-6 space-y-3">
-            {monthlyExpenses.map((e) => (
-              <div key={e.id} className="flex justify-between items-start border-b pb-2">
-                <div className="flex-1">
-                  <p className="font-medium">{e.date} · {e.user}</p>
-                  <p className="text-sm flex items-center gap-2">
-                    <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${CATEGORY_COLORS[e.category] || "bg-gray-200 text-gray-700"}`}>
-                      {e.category}
-                    </span>
-                    <span className="text-gray-500">{e.description}</span>
-                  </p>
-                  {e.receipt && (
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="mt-2"
-                      onClick={() => window.open(e.receipt, "_blank")}
-                    >
-                      View Receipt
-                    </Button>
-                  )}
-                </div>
+            <select
+              name="category"
+              defaultValue={editingExpense ? editingExpense.category : undefined}
+              required
+              className="border px-2 py-1 rounded w-full"
+            >
+              <option value="">Category</option>
+              {Object.keys(CATEGORY_COLORS).map((cat) => (
+                <option key={cat} value={cat}>
+                  {cat}
+                </option>
+              ))}
+            </select>
 
-                <div className="flex flex-col items-end gap-2">
-                  <p className="font-semibold">¥{e.amount.toLocaleString()}</p>
+            <input
+              type="text"
+              name="description"
+              placeholder="Description"
+              defaultValue={editingExpense ? editingExpense.description : ""}
+              className="border px-2 py-1 rounded w-full"
+            />
 
-                  {editMode && (
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      onClick={() => handleEdit(e)}
-                    >
-                      <Pencil className="w-4 h-4" />
-                    </Button>
-                  )}
-                </div>
+            <input type="file" accept="image/*" className="border px-2 py-1 rounded w-full" />
+
+            <button
+              type="submit"
+              className="w-full bg-blue-500 text-white py-2 rounded flex items-center justify-center gap-2"
+            >
+              <Plus /> {editingId ? "Update Expense" : "Add Expense"}
+            </button>
+          </form>
+        </div>
+
+        {/* Expenses List */}
+        <div className="bg-white rounded-2xl shadow p-6 space-y-3">
+          {monthlyExpenses.map((e) => (
+            <div key={e.id} className="flex justify-between items-start border-b pb-2">
+              <div className="flex-1">
+                <p className="font-medium">{e.date} · {e.user}</p>
+                <p className="text-sm flex items-center gap-2">
+                  <span
+                    className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                      CATEGORY_COLORS[e.category] || "bg-gray-200 text-gray-700"
+                    }`}
+                  >
+                    {e.category}
+                  </span>
+                  <span className="text-gray-500">{e.description}</span>
+                </p>
+                {e.receipt && (
+                  <button
+                    className="mt-2 px-2 py-1 border rounded text-sm"
+                    onClick={() => window.open(e.receipt, "_blank")}
+                  >
+                    View Receipt
+                  </button>
+                )}
               </div>
-            ))}
-          </CardContent>
-        </Card>
+              <div className="flex flex-col items-end gap-2">
+                <p className="font-semibold">¥{e.amount.toLocaleString()}</p>
+                {editMode && (
+                  <button
+                    className="px-2 py-1 border rounded"
+                    onClick={() => handleEdit(e)}
+                  >
+                    <Pencil className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
 
-        <Card className="rounded-2xl shadow">
-          <CardContent className="p-6 space-y-4">
-            <h2 className="font-semibold">Totals by Category</h2>
-            {Object.entries(totalsByCategory)
-              .sort((a, b) => b[1] - a[1])
-              .map(([cat, amt]) => (
+        {/* Totals by Category */}
+        <div className="bg-white rounded-2xl shadow p-6 space-y-4">
+          <h2 className="font-semibold">Totals by Category</h2>
+          {Object.entries(totalsByCategory)
+            .sort((a, b) => b[1] - a[1])
+            .map(([cat, amt]) => (
               <div key={cat} className="flex justify-between items-center">
-                <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${CATEGORY_COLORS[cat] || "bg-gray-200 text-gray-700"}`}>
+                <span
+                  className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                    CATEGORY_COLORS[cat] || "bg-gray-200 text-gray-700"
+                  }`}
+                >
                   {cat}
                 </span>
                 <span>¥{amt.toLocaleString()}</span>
               </div>
             ))}
-          </CardContent>
-        </Card>
+        </div>
 
-        <Card className="rounded-2xl shadow">
-          <CardContent className="p-6 space-y-4">
-            <h2 className="font-semibold">Totals by Person</h2>
-            {Object.entries(totalsByUser).map(([user, amt]) => (
-              <div key={user} className="flex justify-between">
-                <span>{user}</span>
-                <span>¥{amt.toLocaleString()}</span>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
+        {/* Totals by Person */}
+        <div className="bg-white rounded-2xl shadow p-6 space-y-4">
+          <h2 className="font-semibold">Totals by Person</h2>
+          {Object.entries(totalsByUser).map(([user, amt]) => (
+            <div key={user} className="flex justify-between">
+              <span>{user}</span>
+              <span>¥{amt.toLocaleString()}</span>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
